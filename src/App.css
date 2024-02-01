@@ -1,6 +1,5 @@
-.App {
-  margin: 0 1rem;
-  text-align: center;
+.react-switch {
+    position: absolute !important;
+    right: 15px;
+    top: 15px
 }
-
-

@@ -1,24 +1,46 @@
-import { useState } from 'react';
-import './App.css';
-import AddNote from './components/AddNote/AddNote';
-import Note from "./components/Note/Note"
-import { Notes } from './components/Note/data';
-import { NoteType } from './components/Note/noteType';
+import { useState } from "react";
+import "./App.css";
+import Home from "./Pages/Home/Home";
+import { ThemeContext } from "./components/Context/Theme/Theme";
+import Switch from "react-switch";
+import { FaSun, FaMoon } from "react-icons/fa";
 
 function App() {
-  const[notes,setNotes] = useState(Notes);
-  const addNote = (note:NoteType) => {
-    setNotes([note,...notes])
-  }
+  const [theme, setTheme] = useState("light");
+  const [checked, setChecked] = useState(false);
+  const handleChange = (check: boolean) => {
+    setChecked(check);
+    if (check) {
+      setTheme("dark");
+    } else {
+      setTheme("light");
+    }
+  };
   return (
-    <div className="App">
-      <h2>Notes App</h2>
-      <AddNote addNote={addNote}></AddNote>
-      {notes.map((note)=>{
-        return <Note key={note.id} text={note.text} priority={note.priority}></Note>
-      })}
-      
-    </div>
+    <ThemeContext.Provider value={theme}>
+      <Switch
+        onChange={handleChange}
+        checked={checked}
+        className="react-switch"
+        checkedIcon={
+          <FaSun
+            size={23}
+            style={{ verticalAlign: "middle", paddingLeft: '6px'}}
+            color="yellow"
+          ></FaSun>
+        }
+        uncheckedIcon={
+          <FaMoon
+            size={23}
+            style={{ verticalAlign: "middle",paddingLeft: '6px' }}
+            color="white"
+          ></FaMoon>
+        }
+        onColor="#900"
+        offColor="#333"
+      />
+      <Home></Home>
+    </ThemeContext.Provider>
   );
 }
 
