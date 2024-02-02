@@ -5,23 +5,23 @@ import { v4 as uuidv4 } from "uuid";
 import { Priority } from "../Note/noteType";
 import Card from "../Card/Card";
 import { ThemeContext } from "../Context/Theme/Theme";
+import { NotesStateContext } from "../Context/NotesState/NotesState";
 
-type AddNoteProps = {
-  addNote: (note: NoteType) => void;
-  updateNote: (note: NoteType) => void;
-  editMode: boolean;
-  noteToBeEditted: NoteType | null;
-};
+// type AddNoteProps = {
+//   addNote: (note: NoteType) => void;
+//   updateNote: (note: NoteType) => void;
+//   editMode: boolean;
+//   noteToBeEditted: NoteType | null;
+// };
 
-export default function AddNote({
-  addNote,
-  updateNote,
-  editMode,
-  noteToBeEditted,
-}: AddNoteProps) {
+export default function AddNote() {
   const [text, setText] = useState("");
   const [priority, setPriority] = useState<Priority>("low");
   const theme = useContext(ThemeContext);
+
+  const { state, dispatch } = useContext(NotesStateContext);
+  const editMode = state.editMode;
+  const noteToBeEditted = state.noteToBeEditted;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);
@@ -31,16 +31,22 @@ export default function AddNote({
     e.preventDefault();
     if (editMode) {
       noteToBeEditted &&
-        updateNote({
-          text,
-          priority,
-          id: noteToBeEditted.id,
+        dispatch({
+          type: "UPDATE_NOTE",
+          payload: {
+            text,
+            priority,
+            id: noteToBeEditted.id,
+          },
         });
     } else {
-      addNote({
-        text,
-        priority,
-        id: uuidv4(),
+      dispatch({
+        type: "ADD_NOTE",
+        payload: {
+          text,
+          priority,
+          id: uuidv4(),
+        },
       });
     }
     setText("");
@@ -61,7 +67,7 @@ export default function AddNote({
   }, [editMode, noteToBeEditted]);
 
   return (
-    <Card padding="2" height="5" bgColor={theme ==='dark'? '#333': '#ddd'}>
+    <Card padding="2" height="5" bgColor={theme === "dark" ? "#333" : "#ddd"}>
       <form className="add-note">
         <input type="text" onChange={handleChange} value={text} />
         <select onChange={handleSelect} value={priority}>
