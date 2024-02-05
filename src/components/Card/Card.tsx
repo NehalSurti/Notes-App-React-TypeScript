@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import "./Card.css";
-import { ThemeContext } from "../Context/Theme/Theme";
+import { ThemeContext } from "../../Context/Theme/Theme";
 
 type CardProp = {
   children: JSX.Element;
@@ -16,7 +16,7 @@ export default function Card({ children, bgColor, height, padding }: CardProp) {
       className={`card ${theme}`}
       style={{
         backgroundColor: bgColor,
-        height: `${height}rem`,
+        height: height,
         padding: `${padding}rem`,
       }}
     >

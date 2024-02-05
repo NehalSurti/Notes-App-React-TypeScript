@@ -1,18 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import "./AddNote.css";
-import { NoteType } from "../Note/noteType";
 import { v4 as uuidv4 } from "uuid";
-import { Priority } from "../Note/noteType";
+import { NoteType, Priority } from "../../Types/Types";
 import Card from "../Card/Card";
-import { ThemeContext } from "../Context/Theme/Theme";
-import { NotesStateContext } from "../Context/NotesState/NotesState";
-
-// type AddNoteProps = {
-//   addNote: (note: NoteType) => void;
-//   updateNote: (note: NoteType) => void;
-//   editMode: boolean;
-//   noteToBeEditted: NoteType | null;
-// };
+import { ThemeContext } from "../../Context/Theme/Theme";
+import { NotesStateContext } from "../../Context/NotesState/NotesState";
+import { addNote, updateNote } from "../../Services/NotesService";
 
 export default function AddNote() {
   const [text, setText] = useState("");
@@ -23,30 +16,39 @@ export default function AddNote() {
   const editMode = state.editMode;
   const noteToBeEditted = state.noteToBeEditted;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleClick = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault();
-    if (editMode) {
-      noteToBeEditted &&
-        dispatch({
-          type: "UPDATE_NOTE",
-          payload: {
-            text,
-            priority,
-            id: noteToBeEditted.id,
-          },
-        });
+    if (editMode && noteToBeEditted) {
+      const updatedNoteData = {
+        text,
+        priority,
+        id: noteToBeEditted.id,
+        createdAt: noteToBeEditted.createdAt,
+        updatedAt: new Date(),
+      };
+      const updatedNote = await updateNote(noteToBeEditted.id, updatedNoteData);
+      dispatch({
+        type: "UPDATE_NOTE",
+        payload: updatedNote,
+      });
     } else {
+      const noteData = {
+        text,
+        priority,
+        id: uuidv4(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      const note = await addNote(noteData);
       dispatch({
         type: "ADD_NOTE",
-        payload: {
-          text,
-          priority,
-          id: uuidv4(),
-        },
+        payload: note,
       });
     }
     setText("");
@@ -69,7 +71,7 @@ export default function AddNote() {
   return (
     <Card padding="2" height="5" bgColor={theme === "dark" ? "#333" : "#ddd"}>
       <form className="add-note">
-        <input type="text" onChange={handleChange} value={text} />
+        <textarea onChange={handleChange} value={text} />
         <select onChange={handleSelect} value={priority}>
           <option value="high">High</option>
           <option value="medium">Medium</option>

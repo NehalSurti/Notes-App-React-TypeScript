@@ -1,9 +1,9 @@
-import { useContext } from "react";
 import "./Home.css";
 import AddNote from "../../components/AddNote/AddNote";
 import Note from "../../components/Note/Note";
-import { ThemeContext } from "../../components/Context/Theme/Theme";
-import { NotesStateContext } from "../../components/Context/NotesState/NotesState";
+import { useContext } from "react";
+import { ThemeContext } from "../../Context/Theme/Theme";
+import { NotesStateContext } from "../../Context/NotesState/NotesState";
 
 function Home() {
   const theme = useContext(ThemeContext);
@@ -21,6 +21,10 @@ function Home() {
             key={note.id}
             text={note.text}
             priority={note.priority}
+            createdAt={note.createdAt}
+            updatedAt={note.updatedAt}
+            note={note}
+            height="3"
           ></Note>
         );
       })}
